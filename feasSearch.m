@@ -1,8 +1,8 @@
 function [ cvx_optval, z, eig_val, eig_vec ] = feasSearch( g, M, H, eig_val, eig_vec, N_bar, gamma )
-G = 3; %no. of user groups
-K = G;
-N = 6;
-for ml = 1:3
+    G = 3; %no. of user groups
+    K = G;
+    N = 6;
+    for ml = 1:1
         cvx_begin quiet
         variables z(M,1);
         variables obj
@@ -13,7 +13,7 @@ for ml = 1:3
             for ma = 1:length(g{k})
                 m = g{k}(ma);
                 t = 0;
-                for n = 1:N_bar(m)
+                for n = 1:N
                     eval = eig_val{m};
                     evec = eig_vec{m};
                     t = t + sqrt(eval(n))*real(w((N*(k-1))+2:(N*(k-1))+1+N)'*evec(:,n));

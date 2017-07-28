@@ -8,11 +8,12 @@ N = 6; %no. of transmit antennas
 theta = (360/M):(360/M):360; %angular distribution of users (mean)
 ang_spread = 1:15; %spread angle of each user
 sigma = 1; %noise power
-gamma = .01; %QoS
+gamma = .1; %QoS
 
 for a = 1:length(ang_spread)
-    
-    for e = 1:2
+    theta = (360/M):(360/M):360;
+    g{1} = [1,2,3,4,5]; g{2} = [6,7,8,9,10]; g{3} = [11,12,13,14,15,16];
+    for e = 1:1
         R = zeros(N,N,M); %channel covariance matrix
         eig_val = cell(M,1);
         eig_vec = cell(M,1);
@@ -22,7 +23,7 @@ for a = 1:length(ang_spread)
             for c = 1:N
                 for r = 1:N
                     R(r,c,m) = exp(1i*pi*(r-c)*sin(theta(m)))*...
-                        exp(-((pi*(r-c)*ang_spread(a)*cos(theta(m)))^2 / 2));
+                        exp(-((pi*(r-c)*ang_spread(3)*cos(theta(m)))^2 / 2));
                 end
             end
             [eig_vec{m},eig_val{m}] = eig(R(:,:,m));
@@ -47,15 +48,22 @@ for a = 1:length(ang_spread)
             for k = 1:K
                 if (ismember(MxI,g{k}))
                     ri = find(g{k} == MxI);
-                    g{k}(ri) = [];
+                    %g{k}(ri) = [];
+                    if k == 1
+                        g = mat2cell(1:M-1,[1],[length(g{1})-1,length(g{2}),length(g{3})]);
+                    elseif k == 2
+                        g = mat2cell(1:M-1,[1],[length(g{1}),length(g{2})-1,length(g{3})]);
+                    else
+                        g = mat2cell(1:M-1,[1],[length(g{1}),length(g{2}),length(g{3})-1]);
+                    end
+                    theta(ri) = [];
                     M = M - 1;
                     break
                 end
             end
-        elseif (obj_val == 0)
+        elseif (obj_val == 0) || (e == 1)
             [w_new,t_new] = powerOptimal(H, eig_val, eig_vec, N_bar, gamma);
         end
-        continue
     end
         
     
